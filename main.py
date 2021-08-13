@@ -1,19 +1,19 @@
 import requests
 import smtplib
-import time
-
+from datetime import date
 import config
 
 apiKey = "90lPqyA1NbfpaGO8OlOYxx3awDEYxiP1"
 ticker = "TSLA"
-limit = "1"
+limit = "2"
 
-year = "2021"
-month = "07"
-day = "29"
+today = date.today()
+year = today.strftime("%Y")
+month = today.strftime("%m")
+day = today.strftime("%d")
 
 my_email = "karolistest0@gmail.com"
-password = "testlabukas1"
+password = input("What's your password?")
 subject = "Stocks news"
 
 api_url = f"https://api.polygon.io/v2/reference/news?limit={limit}&order=descending&sort=published_utc&ticker={ticker}&published_utc.gte={year}-{month}-{day}&apiKey={apiKey}"
@@ -23,17 +23,19 @@ list1 = []
 list2 = []
 list3 = []
 
+
 def send_email(my_email, password, msg):
     try:
         with smtplib.SMTP("smtp.gmail.com", 587) as connection:
-            connection.starttls() #secure the connection
+            connection.starttls()  # secure the connection
             connection.login(my_email, password)
             connection.sendmail(from_addr=my_email,
                                 to_addrs=my_email,
                                 msg=msg)
         print("Success: Email Send!")
-    except:
-        print("Email failed to send.")
+    except Exception as e:
+        print("Email failed to send. ", e)
+
 
 for i in range(int(limit)):
     news_title = data['results'][i]['title']
@@ -46,10 +48,6 @@ for i in range(int(limit)):
 msg = f"Subject:{subject}\n\n" \
       f"News: {list1}\n" \
       f"URL: {list2}\n" \
-#      f"Description: {list3}" Description is just too long should check on this
+    #      f"Description: {list3}" Description is just too long should check on this
 
-send_email(config.MY_EMAIL, config.PASSWORD, msg)
-
-
-
-
+send_email(my_email, password, msg)
